@@ -1,4 +1,5 @@
 import { FcGoogle } from "react-icons/fc";
+import { MdEmail, MdLock } from "react-icons/md";
 import "../styles/global.css";
 import "../styles/login.css";
 
@@ -12,7 +13,7 @@ const LoginPage = () => {
         <p>Join us to manage and share your photos seamlessly!</p>
 
         <button className="google-login">
-          <FcGoogle className="google-icon" />
+          <FcGoogle style={{ fontSize: "20px", marginRight: "8px" }} />
           Continue with Google
         </button>
 
@@ -23,8 +24,20 @@ const LoginPage = () => {
         </div>
 
         <form>
-          <input type="email" placeholder="Your email address" required />
-          <input type="password" placeholder="Create a password" required />
+          <div className="input-group">
+            <MdEmail
+              style={{ fontSize: "18px", marginRight: "8px", color: "#666" }}
+            />
+            <input type="email" placeholder="Your email address" required />
+          </div>
+
+          <div className="input-group">
+            <MdLock
+              style={{ fontSize: "18px", marginRight: "8px", color: "#666" }}
+            />
+            <input type="password" placeholder="Create a password" required />
+          </div>
+
           <button type="submit" className="login-btn">
             Log in
           </button>

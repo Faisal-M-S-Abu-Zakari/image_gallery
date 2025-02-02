@@ -13,13 +13,26 @@
 .login-container {
   position: relative;
   z-index: 10;
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 0px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 400px;
   text-align: center;
+}
+
+.login-container h2 {
+  font-size: 28px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.login-container p {
+  color: #666;
+  font-size: 16px;
+  margin-bottom: 20px;
 }
 
 .google-login {
@@ -30,7 +43,7 @@
   background-color: white;
   color: #333;
   border: 1px solid #ccc;
-  padding: 10px;
+  padding: 12px;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.2s ease-in-out;
@@ -38,4 +51,62 @@
 
 .google-login:hover {
   background-color: #f0f0f0;
+}
+
+.separator {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.separator hr {
+  flex-grow: 1;
+  border: none;
+  height: 1px;
+  background: #ccc;
+}
+
+.separator span {
+  margin: 0 10px;
+  color: #666;
+  font-size: 14px;
+}
+
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.login-btn {
+  width: 100%;
+  background-color: #444;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.login-btn:hover {
+  background-color: #222;
+}
+
+.signup {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #666;
+}
+
+.signup a {
+  color: blue;
+  text-decoration: none;
+}
+
+.signup a:hover {
+  text-decoration: underline;
 }

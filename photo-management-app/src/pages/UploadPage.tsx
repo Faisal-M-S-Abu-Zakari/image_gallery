@@ -1,7 +1,15 @@
-const UploadPage = () => {
+import React from "react";
+import Navbar from "../components/Navbar";
+import UploadForm from "../components/ UploadForm";
+import "../styles/upload.css";
+
+const UploadPage: React.FC = () => {
   return (
-    <div>
-      <h1>Upload</h1>
+    <div className="upload-page">
+      <Navbar />
+      <main>
+        <UploadForm />
+      </main>
     </div>
   );
 };

@@ -3,8 +3,9 @@ import "../styles/global.css";
 import "../styles/login.css";
 import logo from "../../public/image.png";
 import { Link, useNavigate } from "react-router-dom";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 const RegisterPage = () => {
+  const [userName, setUserName] = useState<string | null>(null);
   const name = useRef<HTMLInputElement>(null);
   const email = useRef<HTMLInputElement>(null);
   const password = useRef<HTMLInputElement>(null);
@@ -29,6 +30,9 @@ const RegisterPage = () => {
       const usersArray = existingUsers ? JSON.parse(existingUsers) : [];
       usersArray.push(newUser);
       localStorage.setItem("users", JSON.stringify(usersArray));
+      const loggedInUser = JSON.stringify(name.current.value);
+      localStorage.setItem("loggedInUser", loggedInUser);
+
       navigate("/upload");
     } else {
       alert(

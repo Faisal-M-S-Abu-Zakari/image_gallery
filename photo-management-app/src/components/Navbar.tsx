@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Navbar: React.FC = () => {
   const [userName, setUserName] = useState<string | null>(null);
@@ -24,24 +24,24 @@ const Navbar: React.FC = () => {
 
       {/* Navigation Links */}
       <nav className="flex !space-x-12 text-lg font-medium">
-        <a
-          href="#"
+        <Link
+          to="/upload"
           className="relative hover: transition after:content-[''] after:absolute after:left-0 after:bottom-[-2px] after:w-full after:h-[2px] after:bg-yellow-400 after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300"
         >
           Upload
-        </a>
-        <a
-          href="#"
+        </Link>
+        <Link
+          to="/gallery"
           className="relative hover: transition after:content-[''] after:absolute after:left-0 after:bottom-[-2px] after:w-full after:h-[2px] after:bg-yellow-400 after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300"
         >
           Gallery
-        </a>
-        <a
-          href="#"
+        </Link>
+        <Link
+          to="image-preview"
           className="relative hover: transition after:content-[''] after:absolute after:left-0 after:bottom-[-2px] after:w-full after:h-[2px] after:bg-yellow-400 after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300"
         >
           Image Preview
-        </a>
+        </Link>
       </nav>
 
       {/* User Section */}

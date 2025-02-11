@@ -1,20 +1,62 @@
-import React from "react";
-import "../styles/upload.css";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Navbar: React.FC = () => {
+  const [userName, setUserName] = useState<string | null>(null);
+  const navigate = useNavigate();
+  useEffect(() => {
+    const loggedInUser = localStorage.getItem("loggedInUser");
+    if (loggedInUser) {
+      setUserName(loggedInUser.trim().replace(/"/g, ""));
+    }
+  }, []);
+  const handleLogout = () => {
+    localStorage.removeItem("loggedInUser");
+    setUserName(null);
+    navigate("/login");
+  };
   return (
-    <header className="navbar">
-      <h1 className="logo">SnapShare</h1>
-      <nav>
-        <a href="#">Upload</a>
-        <a href="#">Gallery</a>
-        <a href="#">Image Preview</a>
-      </nav>
-      <div className="user-info">
-        <p>Hello Stranger</p>
-        <button className="logout-btn">Log Out</button>
+    <div className="flex items-center justify-between bg-[#2A2F45] text-white shadow-md !p-3">
+      <div className="flex items-center space-x-3 text-2xl font-serif tracking-wide">
+        <img className="w-8 h-8" src="/public/image.png" alt="Logo" />
+        <span>SnapShare</span>
       </div>
-    </header>
+
+      {/* Navigation Links */}
+      <nav className="flex !space-x-12 text-lg font-medium">
+        <a
+          href="#"
+          className="relative hover: transition after:content-[''] after:absolute after:left-0 after:bottom-[-2px] after:w-full after:h-[2px] after:bg-yellow-400 after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300"
+        >
+          Upload
+        </a>
+        <a
+          href="#"
+          className="relative hover: transition after:content-[''] after:absolute after:left-0 after:bottom-[-2px] after:w-full after:h-[2px] after:bg-yellow-400 after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300"
+        >
+          Gallery
+        </a>
+        <a
+          href="#"
+          className="relative hover: transition after:content-[''] after:absolute after:left-0 after:bottom-[-2px] after:w-full after:h-[2px] after:bg-yellow-400 after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300"
+        >
+          Image Preview
+        </a>
+      </nav>
+
+      {/* User Section */}
+      <div className="flex items-center !space-x-8">
+        <p className="text-l">
+          Welcome {userName ? `, ${userName.toUpperCase()}` : "back!"}
+        </p>
+        <button
+          className="bg-[#1C1F30] text-white !px-5 !py-2 rounded-lg shadow-md font-medium cursor-pointer hover:bg-gray-200 hover:text-[#1C1F30] transition"
+          onClick={handleLogout}
+        >
+          Log Out
+        </button>
+      </div>
+    </div>
   );
 };
 

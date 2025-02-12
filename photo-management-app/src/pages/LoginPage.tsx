@@ -13,16 +13,14 @@ const LoginPage = () => {
     e.preventDefault();
     const existingUsers = localStorage.getItem("users");
     const usersArray = existingUsers ? JSON.parse(existingUsers) : [];
-    const userExists = usersArray.some(
-      (user: { email: string; password: string }) => {
-        return (
-          user.email === email.current?.value &&
-          user.password === password.current?.value
-        );
-      }
+    const userExists = usersArray.find(
+      (user: { email: string; password: string }) =>
+        user.email === email.current?.value &&
+        user.password === password.current?.value
     );
 
     if (userExists) {
+      localStorage.setItem("loggedInUser", JSON.stringify(userExists.name));
       navigate("/upload");
     } else {
       alert("Invalid email or password. Please try again.");

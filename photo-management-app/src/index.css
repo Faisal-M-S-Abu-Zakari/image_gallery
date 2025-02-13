@@ -1,1 +1,10 @@
 @import "tailwindcss";
+/* Custom overlay opacity */
+.modal-overlay {
+    background-color: rgba(0, 0, 0, 0.5) !important; /* Semi-transparent black overlay */
+  }
+  
+  /* Ensure the modal content is fully visible */
+  .modal-content {
+    opacity: 1 !important;
+  }

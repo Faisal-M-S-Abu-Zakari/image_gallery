@@ -6,11 +6,15 @@ import {
   FaInstagramSquare,
   FaLinkedin,
 } from "react-icons/fa";
+
 const HomePage: React.FC = () => {
   return (
     <div className="bg-gray-100 min-h-screen">
       <HomePageHeader />
 
+
+
+  
       <section className="grid grid-cols-1 md:grid-cols-2  h-[80vh]  ">
         <div className="bg-white !p-8 flex flex-col justify-between items-start">
           <h2 className="text-6xl font-bold text-gray-800 mb-4">

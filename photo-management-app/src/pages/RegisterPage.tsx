@@ -3,9 +3,8 @@ import "../styles/global.css";
 import "../styles/login.css";
 import logo from "../../public/image.png";
 import { Link, useNavigate } from "react-router-dom";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 const RegisterPage = () => {
-  const [userName, setUserName] = useState<string | null>(null);
   const name = useRef<HTMLInputElement>(null);
   const email = useRef<HTMLInputElement>(null);
   const password = useRef<HTMLInputElement>(null);

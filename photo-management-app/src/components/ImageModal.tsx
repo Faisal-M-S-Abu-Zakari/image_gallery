@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "@mui/joy/Modal";
 import ModalClose from "@mui/joy/ModalClose";
 import Typography from "@mui/joy/Typography";
 import Sheet from "@mui/joy/Sheet";
-import { Avatar } from "@mui/joy";
+import { Avatar, DialogTitle, List, ListItem, ListItemButton } from "@mui/joy";
 import Button from "@mui/joy/Button";
+import { Dialog, DialogContent } from "@mui/material";
 
 interface ImageModalProps {
   open: boolean;
@@ -17,6 +18,35 @@ const ImageModal: React.FC<ImageModalProps> = ({
   onClose,
   selectedPhoto,
 }) => {
+  const [openSaveDialog, SetOpenSaveDialog] = useState<boolean>(false);
+  const [albums, setAlbums] = useState<{ id: number; name: string }[]>([]);
+
+  useEffect(() => {
+    const savedAlbums = localStorage.getItem("albums");
+    if (savedAlbums) {
+      setAlbums(JSON.parse(savedAlbums));
+    }
+  }, []);
+
+  const handleOpenSaveDialog = () => {
+    SetOpenSaveDialog(true);
+  };
+
+  const handleSaveToAlbum = (albumId: number) => {
+    const savedAlbums = localStorage.getItem("albums");
+    if (!savedAlbums) return;
+
+    const albums = JSON.parse(savedAlbums);
+    const updatedAlbums = albums.map((album: any) =>
+      album.id === albumId
+        ? { ...album, photos: [...album.photos, selectedPhoto] }
+        : album
+    );
+
+    localStorage.setItem("albums", JSON.stringify(updatedAlbums));
+    SetOpenSaveDialog(false);
+  };
+
   return (
     <Modal
       aria-labelledby="modal-title"
@@ -98,12 +128,37 @@ const ImageModal: React.FC<ImageModalProps> = ({
             <Button
               variant="solid"
               color="primary"
-              onClick={() => window.open(selectedPhoto?.links.html, "_blank")}
+              onClick={handleOpenSaveDialog}
               sx={{ mt: 2 }}
             >
               ADD TO ALBUM
             </Button>
           </div>
+          <Dialog
+            open={openSaveDialog}
+            onClose={() => SetOpenSaveDialog(false)}
+          >
+            <DialogTitle>Pick an album to save to</DialogTitle>
+            <DialogContent>
+              <List>
+                {albums.length > 0 ? (
+                  albums.map((album) => (
+                    <ListItem key={album.id}>
+                      <ListItemButton
+                        onClick={() => handleSaveToAlbum(album.id)}
+                      >
+                        {album.name}
+                      </ListItemButton>
+                    </ListItem>
+                  ))
+                ) : (
+                  <Typography sx={{ p: 2 }}>
+                    No albums found. Create one first.
+                  </Typography>
+                )}
+              </List>
+            </DialogContent>
+          </Dialog>
         </div>
       </Sheet>
     </Modal>

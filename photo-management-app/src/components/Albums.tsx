@@ -16,7 +16,14 @@ import {
   TextField,
 } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+  DroppableProvided,
+  DraggableProvided,
+} from "react-beautiful-dnd";
 
 // Define TypeScript types
 interface Photo {
@@ -41,6 +48,9 @@ const Albums: React.FC = () => {
   const [newAlbumName, setNewAlbumName] = useState("");
   const [currentAlbum, setCurrentAlbum] = useState<Album | null>(null);
   const [openAlbumView, setOpenAlbumView] = useState(false);
+  const Draggable1: any = Draggable;
+  const Droppable1: any = Droppable;
+  const DragDropContext1: any = DragDropContext;
 
   useEffect(() => {
     localStorage.setItem("albums", JSON.stringify(albums));
@@ -176,89 +186,89 @@ const Albums: React.FC = () => {
         <DialogTitle>{currentAlbum?.name}</DialogTitle>
         <DialogContent dividers>
           {currentAlbum?.photos.length ? (
-            // <Grid container spacing={2}>
-            //   {currentAlbum.photos.map((photo) => (
-            //     <Grid item key={photo.id} xs={6} sm={4} md={3}>
-            //       <CardMedia
-            //         component="img"
-            //         height="100"
-            //         image={
-            //           photo.displayUrl ||
-            //           photo.url ||
-            //           "https://via.placeholder.com/150"
-            //         }
-            //         alt="Album Photo"
-            //         sx={{ objectFit: "cover", width: "100%" }}
-            //       />
-            //     </Grid>
-            //   ))}
-            // </Grid>
-            <DragDropContext
-              onDragEnd={(result) => {
-                // Handle reordering of photos
-                const { source, destination } = result;
-                if (!destination) return;
-
-                const reorderedPhotos = Array.from(currentAlbum.photos);
-                const [movedPhoto] = reorderedPhotos.splice(source.index, 1);
-                reorderedPhotos.splice(destination.index, 0, movedPhoto);
-
-                // Update the album with reordered photos
-                setAlbums((prevAlbums) =>
-                  prevAlbums.map((album) =>
-                    album.id === currentAlbum.id
-                      ? { ...album, photos: reorderedPhotos }
-                      : album
-                  )
-                );
-              }}
-            >
-              <Droppable droppableId="photoList" direction="horizontal">
-                {(provided) => (
-                  <Grid
-                    container
-                    spacing={2}
-                    {...provided.droppableProps}
-                    ref={provided.innerRef}
-                  >
-                    {currentAlbum.photos.map((photo, index) => (
-                      <Draggable
-                        key={photo.id}
-                        draggableId={photo.id.toString()}
-                        index={index}
-                      >
-                        {(provided) => (
-                          <Grid
-                            item
-                            key={photo.id}
-                            xs={6}
-                            sm={4}
-                            md={3}
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                          >
-                            <CardMedia
-                              component="img"
-                              height="100"
-                              image={
-                                photo.displayUrl ||
-                                photo.url ||
-                                "https://via.placeholder.com/150"
-                              } // Fallback to placeholder if no URL or displayUrl
-                              alt="Album Photo"
-                              sx={{ objectFit: "cover", width: "100%" }}
-                            />
-                          </Grid>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </Grid>
-                )}
-              </Droppable>
-            </DragDropContext>
+            <Grid container spacing={2}>
+              {currentAlbum.photos.map((photo) => (
+                <Grid item key={photo.id} xs={6} sm={4} md={3}>
+                  <CardMedia
+                    component="img"
+                    height="100"
+                    image={
+                      photo.displayUrl ||
+                      photo.url ||
+                      "https://via.placeholder.com/150"
+                    }
+                    alt="Album Photo"
+                    sx={{ objectFit: "cover", width: "100%" }}
+                  />
+                </Grid>
+              ))}
+            </Grid>
           ) : (
+            // <DragDropContext
+            //   onDragEnd={(result: DropResult) => {
+            //     // Handle reordering of photos
+            //     const { source, destination } = result;
+            //     if (!destination) return;
+
+            //     const reorderedPhotos = Array.from(currentAlbum.photos);
+            //     const [movedPhoto] = reorderedPhotos.splice(source.index, 1);
+            //     reorderedPhotos.splice(destination.index, 0, movedPhoto);
+
+            //     // Update the album with reordered photos
+            //     setAlbums((prevAlbums) =>
+            //       prevAlbums.map((album) =>
+            //         album.id === currentAlbum.id
+            //           ? { ...album, photos: reorderedPhotos }
+            //           : album
+            //       )
+            //     );
+            //   }}
+            // >
+            //   <Droppable1 droppableId="photoList" direction="horizontal">
+            //     {(provided: DroppableProvided, snapshot) => (
+            //       <Grid
+            //         container
+            //         spacing={2}
+            //         {...provided.droppableProps}
+            //         ref={provided.innerRef}
+            //       >
+            //         {currentAlbum.photos.map((photo, index) => (
+            //           <Draggable1
+            //             key={photo.id}
+            //             draggableId={photo.id.toString()}
+            //             index={index}
+            //           >
+            //             {(provided: DraggableProvided) => (
+            //               <Grid
+            //                 item
+            //                 key={photo.id}
+            //                 xs={6}
+            //                 sm={4}
+            //                 md={3}
+            //                 ref={provided.innerRef}
+            //                 {...provided.draggableProps}
+            //                 {...provided.dragHandleProps}
+            //               >
+            //                 <CardMedia
+            //                   component="img"
+            //                   height="100"
+            //                   image={
+            //                     photo.displayUrl ||
+            //                     photo.url ||
+            //                     "https://via.placeholder.com/150"
+            //                   } // Fallback to placeholder if no URL or displayUrl
+            //                   alt="Album Photo"
+            //                   sx={{ objectFit: "cover", width: "100%" }}
+            //                 />
+            //               </Grid>
+            //             )}
+            //           </Draggable1>
+            //         ))}
+            //         {provided.placeholder}
+            //       </Grid>
+            //     )}
+            //   </Droppable1>
+            // </DragDropContext>
             <Typography variant="body1" textAlign="center" sx={{ p: 2 }}>
               There are no images in this album yet
             </Typography>

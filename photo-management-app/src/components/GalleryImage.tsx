@@ -1,21 +1,16 @@
 import { useState, useEffect } from "react";
 import "./modal.css"; // Import custom CSS for modal overlay
-import Select from "react-select";
-import Button from "@mui/joy/Button";
-import Modal from "@mui/joy/Modal";
-import ModalClose from "@mui/joy/ModalClose";
-import Typography from "@mui/joy/Typography";
-import Sheet from "@mui/joy/Sheet";
-import { Avatar } from "@mui/joy";
+
 import { useSearchParams } from "react-router-dom";
+import ImageModal from "./ImageModal"; // Import the new modal component
 
 const accessKey = "yV2m_rhcRv8dfOGOA7uguPjkusei1k4kpqbZXVxpPNc";
 
 const GalleryImage = () => {
-  const [Photos, setPhotos] = useState<any[]>([]);
-  const [FilteredPhotos, setFilteredPhotos] = useState<any[]>([]);
   const [open, setOpen] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState<any>(null);
+  const [Photos, setPhotos] = useState<any[]>([]);
+  const [FilteredPhotos, setFilteredPhotos] = useState<any[]>([]);
   const [param, setParam] = useSearchParams();
   useEffect(() => {
     fetchPhotos();
@@ -108,11 +103,6 @@ const GalleryImage = () => {
     setOpen(true);
   };
 
-  const options = [
-    { value: "upload", label: "Upload Date" },
-    { value: "taken", label: "Taken Date" },
-  ];
-
   return (
     <div className=" !p-6 h-[90vh] ">
       <h2 className="text-3xl font-bold text-gray-800 text-center mb-6">
@@ -171,100 +161,11 @@ const GalleryImage = () => {
       </div>
 
       {/* Improved Modal with MUI Joy */}
-      <Modal
-        aria-labelledby="modal-title"
-        aria-describedby="modal-desc"
+      <ImageModal
         open={open}
         onClose={() => setOpen(false)}
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          backdropFilter: "blur(5px)", // Blurred background
-        }}
-      >
-        <Sheet
-          variant="outlined"
-          sx={{
-            maxWidth: 1200,
-
-            p: 4,
-            boxShadow: "xl",
-            backgroundColor: "white",
-            width: "90%",
-          }}
-        >
-          <ModalClose variant="plain" sx={{ m: 1, color: "gray" }} />
-
-          {/* Title */}
-          <Typography
-            component="h2"
-            id="modal-title"
-            level="h4"
-            sx={{
-              fontWeight: "bold",
-              mb: 2,
-              textAlign: "center",
-              color: "black",
-            }}
-          >
-            Image Details
-          </Typography>
-
-          {/* Image and Details Layout */}
-          <div className="flex flex-col sm:flex-row gap-4 w-full">
-            {/* Image Section */}
-            <div className="w-full sm:w-1/2 flex justify-center">
-              <img
-                src={selectedPhoto?.displayUrl}
-                alt={selectedPhoto?.alt_description || "Gallery Image"}
-                className="w-full h-[400px] object-cover   rounded-lg shadow-md"
-              />
-            </div>
-
-            {/* Details Section */}
-            <div className="w-full sm:w-1/2 flex flex-col !space-y-8 !mx-4">
-              <div className="flex items-center gap-3">
-                <Avatar
-                  src={selectedPhoto?.user.profile_image.medium}
-                  alt={selectedPhoto?.user.name}
-                  sx={{ width: 60, height: 60 }}
-                />
-                <Typography level="body-lg" fontWeight="bold">
-                  <a
-                    href={selectedPhoto?.user.links.html}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
-                  >
-                    {selectedPhoto?.user.name}
-                  </a>
-                </Typography>
-              </div>
-              <Typography level="body-lg" fontWeight="bold">
-                {selectedPhoto?.alt_description || "No Title"}
-              </Typography>
-
-              <Typography level="body-md" textColor="text.secondary">
-                {selectedPhoto?.description || "No Description Available"}
-              </Typography>
-
-              {/* Filter Dropdown */}
-              <Button
-                variant="solid"
-                color="primary"
-                onClick={() => window.open(selectedPhoto?.links.html, "_blank")}
-                sx={{ mt: 2 }}
-              >
-                ADD TO ALBUM
-              </Button>
-              <Select options={options} placeholder="Sort by" />
-
-              {/* View Full Image Button */}
-            </div>
-          </div>
-        </Sheet>
-      </Modal>
+        selectedPhoto={selectedPhoto}
+      />
     </div>
   );
 };

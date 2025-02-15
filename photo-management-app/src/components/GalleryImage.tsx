@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import "./modal.css"; // Import custom CSS for modal overlay
-
+import { Grid2X2, List, ArrowUpDown } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import ImageModal from "./ImageModal"; // Import the new modal component
 
@@ -12,13 +12,16 @@ const GalleryImage = () => {
   const [Photos, setPhotos] = useState<any[]>([]);
   const [FilteredPhotos, setFilteredPhotos] = useState<any[]>([]);
   const [param, setParam] = useSearchParams();
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [sortBy, setSortBy] = useState<"created" | "updated">("created");
   useEffect(() => {
     fetchPhotos();
   }, [param]); // Fetch photos whenever the search parameters change
 
   useEffect(() => {
     filterPhotos();
-  }, [Photos]); // Filter photos whenever new photos are fetched
+  }, [Photos, sortOrder, sortBy]); // Filter photos whenever new photos are fetched
   const fetchPhotos = async () => {
     const searchCategory = param.get("Search") || "animal";
     try {
@@ -36,7 +39,7 @@ const GalleryImage = () => {
     const type = param.get("Type");
     const size = param.get("Size");
 
-    let filtered = Photos;
+    let filtered = [...Photos];
 
     // Filter by type (JPEG or PNG)
     if (type === "jpeg") {
@@ -44,7 +47,18 @@ const GalleryImage = () => {
     } else if (type === "png") {
       filtered = filtered.filter((photo) => photo.urls.full.includes("png"));
     }
-
+    // Sort by date
+    filtered.sort((a, b) => {
+      const dateA = new Date(
+        sortBy === "created" ? a.created_at : a.updated_at
+      );
+      const dateB = new Date(
+        sortBy === "created" ? b.created_at : b.updated_at
+      );
+      return sortOrder === "asc"
+        ? dateA.getTime() - dateB.getTime()
+        : dateB.getTime() - dateA.getTime();
+    });
     // Filter by size
     if (size === "small") {
       filtered = filtered.map((photo) => ({
@@ -102,40 +116,82 @@ const GalleryImage = () => {
     setSelectedPhoto(photo);
     setOpen(true);
   };
-
+  const toggleSortOrder = () => {
+    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+  };
   return (
     <div className=" !p-6 h-[90vh] ">
-      <h2 className="text-3xl font-bold text-gray-800 text-center mb-6">
+      <h2 className="text-3xl font-bold text-gray-800 text-center !mb-6">
         Photo Gallery
       </h2>
+      <div className="flex flex-wrap gap-4 justify-center !mb-6 bg-white rounded-xl shadow-sm !p-6 border border-gray-100">
+        <div className="flex flex-wrap gap-4 items-center justify-center !w-full !md:w-auto">
+          <select
+            onChange={handleType}
+            value={param.get("Type") || ""}
+            className="!px-4 !py-2 !border !border-gray-200 !rounded-lg !bg-white !hover:border-gray-300 !focus:border-purple-500 !focus:ring-2 !focus:ring-purple-200 !transition-all !duration-200 !outline-none min-w-[120px]"
+          >
+            <option value="all">All</option>
+            <option value="jpeg">JPEG</option>
+            <option value="png">PNG</option>
+          </select>
 
-      <div className="flex flex-wrap gap-4 justify-center mb-6 !p-3">
-        {/* <Select options={options} placeholder="Select filter" /> */}
-        <select onChange={handleType} value={param.get("Type") || ""}>
-          <option value="all">All</option>
-          <option value="jpeg">JPEG</option>
-          <option value="png">PNG</option>
-        </select>
-
-        <select onChange={handleSize}>
-          <option value="all">All Sizes</option>
-          <option value="small">Small</option>
-          <option value="regular">Medium</option>
-          <option value="full">Large</option>
-        </select>
-        <input
-          type="text"
-          placeholder="Search images..."
-          className="px-3 py-2 border rounded-md shadow-sm"
-          onChange={handleSearch}
-        />
-
-        <button className="px-4 py-2 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700">
-          Toggle View
-        </button>
+          <select
+            onChange={handleSize}
+            className="!px-4 !py-2 !border !border-gray-200 !rounded-lg !bg-white !hover:border-gray-300 !focus:border-purple-500 !focus:ring-2 !focus:ring-purple-200 !transition-all !duration-200 !outline-none !min-w-[120px]"
+          >
+            <option value="all">All Sizes</option>
+            <option value="small">Small</option>
+            <option value="regular">Medium</option>
+            <option value="full">Large</option>
+          </select>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as "created" | "updated")}
+            className="!px-4 !py-2 !border !border-gray-200 !rounded-lg !bg-white !hover:border-gray-300 !focus:border-purple-500 !focus:ring-2 !focus:ring-purple-200 !transition-all !duration-200 !outline-none !min-w-[140px]"
+          >
+            <option value="created">Created Date</option>
+            <option value="updated">Updated Date</option>
+          </select>
+        </div>
+        <div className="flex flex-wrap gap-4 items-center justify-center">
+          <button
+            onClick={toggleSortOrder}
+            className="!px-4 !py-2 bg-gray-50 text-gray-700 rounded-lg border border-gray-200 hover:bg-gray-100 hover:border-gray-300 transition-all duration-200 flex items-center gap-2 min-w-[130px]"
+          >
+            <ArrowUpDown className="w-4 h-4" />
+            {sortOrder === "asc" ? "Ascending" : "Descending"}
+          </button>
+          <button
+            onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
+            className="!px-4 !py-2 bg-gray-50 text-gray-700 rounded-lg border border-gray-200 hover:bg-gray-100 hover:border-gray-300 transition-all duration-200 flex items-center gap-2 min-w-[100px]
+"
+          >
+            {viewMode === "grid" ? (
+              <>
+                <Grid2X2 className="w-4 h-4" /> Grid
+              </>
+            ) : (
+              <>
+                <List className="w-4 h-4" /> List
+              </>
+            )}
+          </button>
+          <input
+            type="text"
+            placeholder="Search images..."
+            className="!px-4 !py-2 !border !border-gray-500 !rounded-lg !bg-white !hover:border-gray-300 !focus:border-purple-500 !focus:ring-2 !focus:ring-purple-200 !transition-all !duration-200 !outline-none !w-full !md:w-auto !md:min-w-[200px]"
+            onChange={handleSearch}
+          />
+        </div>
       </div>
-
-      <div className="container min-h-[60vh] mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 place-items-center p-4 !pb-10">
+      <div
+        className={`container min-h-[60vh] mx-auto ${
+          viewMode === "grid"
+            ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
+            : "flex flex-col gap-4 w-full"
+        } place-items-center !p-4 pb-10`}
+      >
         {FilteredPhotos.length > 0 ? (
           FilteredPhotos.map((photo, index) => (
             <div
@@ -158,14 +214,13 @@ const GalleryImage = () => {
             <p className="text-center text-black">No images found.</p>
           </div>
         )}
-      </div>
 
-      {/* Improved Modal with MUI Joy */}
-      <ImageModal
-        open={open}
-        onClose={() => setOpen(false)}
-        selectedPhoto={selectedPhoto}
-      />
+        <ImageModal
+          open={open}
+          onClose={() => setOpen(false)}
+          selectedPhoto={selectedPhoto}
+        />
+      </div>
     </div>
   );
 };

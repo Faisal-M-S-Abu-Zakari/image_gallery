@@ -17,10 +17,9 @@ import {
   Checkbox,
 } from "@mui/material";
 import { Edit, Delete, DriveFileMove } from "@mui/icons-material";
-import DragDropContext from "react-beautiful-dnd";
-import Droppable from "react-beautiful-dnd";
-import Draggable from "react-beautiful-dnd";
-
+// import DragDropContext from "react-beautiful-dnd";
+// import Droppable from "react-beautiful-dnd";
+// import Draggable from "react-beautiful-dnd";
 import { Box } from "@mui/joy";
 
 // Define TypeScript types
@@ -47,9 +46,6 @@ const Albums: React.FC = () => {
   const [currentAlbum, setCurrentAlbum] = useState<Album | null>(null);
   const [openAlbumView, setOpenAlbumView] = useState<boolean>(false);
   const [selectedPhotos, setSelectedPhotos] = useState<Set<number>>(new Set()); // To track selected photos
-  const Draggable1: any = Draggable;
-  const Droppable1: any = Droppable;
-  const DragDropContext1: any = DragDropContext;
 
   useEffect(() => {
     localStorage.setItem("albums", JSON.stringify(albums));

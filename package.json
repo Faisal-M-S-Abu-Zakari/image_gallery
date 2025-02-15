@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^6.4.4",
+    "@mui/joy": "^5.0.0-beta.51",
+    "@mui/material": "^6.4.4",
+    "lucide-react": "^0.475.0",
+    "react-beautiful-dnd": "^13.1.1"
+  }
+}

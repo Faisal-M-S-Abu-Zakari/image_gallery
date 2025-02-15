@@ -19,14 +19,16 @@ const GalleryImage = () => {
   const [param, setParam] = useSearchParams();
   useEffect(() => {
     fetchPhotos();
-  }, []);
+  }, [param]); // Fetch photos whenever the search parameters change
+
   useEffect(() => {
     filterPhotos();
-  }, [param, Photos]);
+  }, [Photos]); // Filter photos whenever new photos are fetched
   const fetchPhotos = async () => {
+    const searchCategory = param.get("Search") || "animal";
     try {
       const res = await fetch(
-        `https://api.unsplash.com/search/photos?query=animal&page=1&per_page=30&client_id=${accessKey}`
+        `https://api.unsplash.com/search/photos?query=${searchCategory}&page=1&per_page=30&client_id=${accessKey}`
       );
       const data = await res.json();
       console.log(data.results);
@@ -92,6 +94,15 @@ const GalleryImage = () => {
     }
     setParam(param);
   };
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    if (query === "") {
+      param.delete("Search");
+    } else {
+      param.set("Search", query);
+    }
+    setParam(param);
+  };
   const handleImageClick = (photo: any) => {
     setSelectedPhoto(photo);
     setOpen(true);
@@ -126,6 +137,7 @@ const GalleryImage = () => {
           type="text"
           placeholder="Search images..."
           className="px-3 py-2 border rounded-md shadow-sm"
+          onChange={handleSearch}
         />
 
         <button className="px-4 py-2 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700">

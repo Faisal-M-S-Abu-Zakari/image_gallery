@@ -29,7 +29,7 @@ interface Album {
   photos: Photo[];
   cover: Photo | null;
 }
-
+//change
 const AlbumsPage: React.FC = () => {
   const [albums, setAlbums] = useState<Album[]>(() => {
     const savedAlbums = localStorage.getItem("albums");

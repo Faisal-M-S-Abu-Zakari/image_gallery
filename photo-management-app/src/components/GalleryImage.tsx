@@ -3,6 +3,7 @@ import "./modal.css"; // Import custom CSS for modal overlay
 import { Grid2X2, List, ArrowUpDown } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import ImageModal from "./ImageModal"; // Import the new modal component
+import LoadingPage from "../pages/LoadingPage";
 
 const accessKey = "yV2m_rhcRv8dfOGOA7uguPjkusei1k4kpqbZXVxpPNc";
 
@@ -15,6 +16,7 @@ const GalleryImage = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [sortBy, setSortBy] = useState<"created" | "updated">("created");
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     fetchPhotos();
   }, [param]); // Fetch photos whenever the search parameters change
@@ -23,6 +25,7 @@ const GalleryImage = () => {
     filterPhotos();
   }, [Photos, sortOrder, sortBy]); // Filter photos whenever new photos are fetched
   const fetchPhotos = async () => {
+    setLoading(true);
     const searchCategory = param.get("Search") || "animal";
     try {
       const res = await fetch(
@@ -33,6 +36,8 @@ const GalleryImage = () => {
       setPhotos(data.results);
     } catch (error) {
       console.error("Error fetching photos:", error);
+    } finally {
+      setLoading(false);
     }
   };
   const filterPhotos = () => {
@@ -185,42 +190,48 @@ const GalleryImage = () => {
           />
         </div>
       </div>
-      <div
-        className={`container min-h-[60vh] mx-auto ${
-          viewMode === "grid"
-            ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
-            : "flex flex-col gap-4 w-full"
-        } place-items-center !p-4 pb-10`}
-      >
-        {FilteredPhotos.length > 0 ? (
-          FilteredPhotos.map((photo, index) => (
-            <div
-              key={index}
-              onClick={() => handleImageClick(photo)}
-              className="relative w-full max-w-[300px] group bg-white rounded-lg shadow-md overflow-hidden cursor-pointer"
-            >
-              <img
-                src={photo.displayUrl}
-                alt={photo.alt_description || "Gallery Image"}
-                className="w-full h-56 object-cover transition-transform duration-300 transform group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 text-white">
-                <p className="text-sm font-semibold">{photo.alt_description}</p>
+      {loading ? (
+        <LoadingPage />
+      ) : (
+        <div
+          className={`container min-h-[60vh] mx-auto ${
+            viewMode === "grid"
+              ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
+              : "flex flex-col gap-4 w-full"
+          } place-items-center !p-4 pb-10`}
+        >
+          {FilteredPhotos.length > 0 ? (
+            FilteredPhotos.map((photo, index) => (
+              <div
+                key={index}
+                onClick={() => handleImageClick(photo)}
+                className="relative w-full max-w-[300px] group bg-white rounded-lg shadow-md overflow-hidden cursor-pointer"
+              >
+                <img
+                  src={photo.displayUrl}
+                  alt={photo.alt_description || "Gallery Image"}
+                  className="w-full h-56 object-cover transition-transform duration-300 transform group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 text-white">
+                  <p className="text-sm font-semibold">
+                    {photo.alt_description}
+                  </p>
+                </div>
               </div>
+            ))
+          ) : (
+            <div className="flex justify-center items-center col-span-full h-full">
+              <p className="text-center text-black">No images found.</p>
             </div>
-          ))
-        ) : (
-          <div className="flex justify-center items-center col-span-full h-full">
-            <p className="text-center text-black">No images found.</p>
-          </div>
-        )}
+          )}
 
-        <ImageModal
-          open={open}
-          onClose={() => setOpen(false)}
-          selectedPhoto={selectedPhoto}
-        />
-      </div>
+          <ImageModal
+            open={open}
+            onClose={() => setOpen(false)}
+            selectedPhoto={selectedPhoto}
+          />
+        </div>
+      )}
     </div>
   );
 };

@@ -43,9 +43,18 @@ const ImageModal: React.FC<ImageModalProps> = ({
         : album
     );
 
+    const updatedAlbum = updatedAlbums.find(
+      (album: any) => album.id === albumId
+    );
+    if (updatedAlbum && updatedAlbum.photos.length > 0) {
+      updatedAlbum.cover = updatedAlbum.photos[updatedAlbum.photos.length - 1];
+    }
+    console.log(selectedPhoto.displayUrl);
     localStorage.setItem("albums", JSON.stringify(updatedAlbums));
+    // Toast.success('image saved successfully!')
     SetOpenSaveDialog(false);
   };
+
   //change
   return (
     <Modal

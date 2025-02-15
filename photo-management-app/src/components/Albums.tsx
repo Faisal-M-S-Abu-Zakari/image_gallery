@@ -16,11 +16,13 @@ import {
   TextField,
 } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 // Define TypeScript types
 interface Photo {
   id: number;
   url: string;
+  displayUrl: string;
 }
 
 interface Album {
@@ -30,7 +32,7 @@ interface Album {
   cover: Photo | null;
 }
 //change
-const AlbumsPage: React.FC = () => {
+const Albums: React.FC = () => {
   const [albums, setAlbums] = useState<Album[]>(() => {
     const savedAlbums = localStorage.getItem("albums");
     return savedAlbums ? JSON.parse(savedAlbums) : [];
@@ -87,14 +89,17 @@ const AlbumsPage: React.FC = () => {
               onClick={() => {
                 setCurrentAlbum(album);
                 setOpenAlbumView(true);
+                if (album.photos.length > 0) {
+                  console.log(album.photos[0].displayUrl);
+                }
               }}
             >
               <CardMedia
                 component="img"
                 height="140"
                 image={
-                  album.cover
-                    ? album.cover.url
+                  album.cover && album.cover.displayUrl
+                    ? album.cover.displayUrl
                     : "https://via.placeholder.com/150"
                 }
                 alt={album.name}
@@ -171,18 +176,88 @@ const AlbumsPage: React.FC = () => {
         <DialogTitle>{currentAlbum?.name}</DialogTitle>
         <DialogContent dividers>
           {currentAlbum?.photos.length ? (
-            <Grid container spacing={2}>
-              {currentAlbum.photos.map((photo) => (
-                <Grid item key={photo.id} xs={6} sm={4} md={3}>
-                  <CardMedia
-                    component="img"
-                    height="100"
-                    image={photo.url}
-                    alt="Album Photo"
-                  />
-                </Grid>
-              ))}
-            </Grid>
+            // <Grid container spacing={2}>
+            //   {currentAlbum.photos.map((photo) => (
+            //     <Grid item key={photo.id} xs={6} sm={4} md={3}>
+            //       <CardMedia
+            //         component="img"
+            //         height="100"
+            //         image={
+            //           photo.displayUrl ||
+            //           photo.url ||
+            //           "https://via.placeholder.com/150"
+            //         }
+            //         alt="Album Photo"
+            //         sx={{ objectFit: "cover", width: "100%" }}
+            //       />
+            //     </Grid>
+            //   ))}
+            // </Grid>
+            <DragDropContext
+              onDragEnd={(result) => {
+                // Handle reordering of photos
+                const { source, destination } = result;
+                if (!destination) return;
+
+                const reorderedPhotos = Array.from(currentAlbum.photos);
+                const [movedPhoto] = reorderedPhotos.splice(source.index, 1);
+                reorderedPhotos.splice(destination.index, 0, movedPhoto);
+
+                // Update the album with reordered photos
+                setAlbums((prevAlbums) =>
+                  prevAlbums.map((album) =>
+                    album.id === currentAlbum.id
+                      ? { ...album, photos: reorderedPhotos }
+                      : album
+                  )
+                );
+              }}
+            >
+              <Droppable droppableId="photoList" direction="horizontal">
+                {(provided) => (
+                  <Grid
+                    container
+                    spacing={2}
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                  >
+                    {currentAlbum.photos.map((photo, index) => (
+                      <Draggable
+                        key={photo.id}
+                        draggableId={photo.id.toString()}
+                        index={index}
+                      >
+                        {(provided) => (
+                          <Grid
+                            item
+                            key={photo.id}
+                            xs={6}
+                            sm={4}
+                            md={3}
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                          >
+                            <CardMedia
+                              component="img"
+                              height="100"
+                              image={
+                                photo.displayUrl ||
+                                photo.url ||
+                                "https://via.placeholder.com/150"
+                              } // Fallback to placeholder if no URL or displayUrl
+                              alt="Album Photo"
+                              sx={{ objectFit: "cover", width: "100%" }}
+                            />
+                          </Grid>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </Grid>
+                )}
+              </Droppable>
+            </DragDropContext>
           ) : (
             <Typography variant="body1" textAlign="center" sx={{ p: 2 }}>
               There are no images in this album yet
@@ -197,4 +272,4 @@ const AlbumsPage: React.FC = () => {
   );
 };
 
-export default AlbumsPage;
+export default Albums;

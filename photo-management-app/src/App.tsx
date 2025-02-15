@@ -4,7 +4,6 @@ import HomePage from "./pages/HomePage";
 import RegisterPage from "./pages/RegisterPage";
 import UploadPage from "./pages/UploadPage";
 import GalleyPage from "./pages/GalleyPage";
-import AlbumsPage from "./pages/AlbumsPage";
 
 function App() {
   return (
@@ -15,7 +14,6 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/upload" element={<UploadPage />} />
         <Route path="/gallery" element={<GalleyPage />} />
-        <Route path="/albums" element={<AlbumsPage />} />
       </Routes>
     </BrowserRouter>
   );

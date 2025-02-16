@@ -49,3 +49,20 @@ export interface AlbumCardProps {
   onDelete: (albumId: number) => void;
   onClick: (album: Album) => void;
 }
+export interface ImageCardProps {
+  image: UploadedImage;
+  index: number;
+  onMetadataChange: (
+    index: number,
+    key: "title" | "description" | "user",
+    value: string
+  ) => void;
+}
+export interface ImageGridProps {
+  images: UploadedImage[];
+  onMetadataChange: (
+    index: number,
+    key: "title" | "description" | "user",
+    value: string
+  ) => void;
+}

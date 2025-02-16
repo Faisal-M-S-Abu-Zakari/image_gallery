@@ -1,7 +1,15 @@
+import { useState, useEffect } from "react";
 import { useGallery } from "../hooks/useGallery";
 import ImageModal from "./ImageModal";
 import GalleryFilters from "./GalleryFilters";
 import GalleryLoading from "./GalleryLoading";
+
+type UploadedImage = {
+  url: string;
+  title: string;
+  description: string;
+  user: string;
+};
 
 const GalleryImage = () => {
   const {
@@ -22,6 +30,26 @@ const GalleryImage = () => {
     setViewMode,
     setSortBy,
   } = useGallery();
+
+  // State for uploaded images with explicit type
+  const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
+
+  useEffect(() => {
+    const savedImages = JSON.parse(localStorage.getItem("uploadedImages") || "[]") as UploadedImage[];
+    setUploadedImages(Array.isArray(savedImages) ? savedImages : []);
+  }, []);
+
+  // Combine API images with uploaded images
+  const allPhotos = [
+    ...uploadedImages.map((image) => ({
+      displayUrl: image.url,
+      alt_description: image.title || "Uploaded Image",
+      title: image.title || "Uploaded Image",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })),
+    ...filteredPhotos,
+  ];
 
   return (
     <div className="!p-6 h-[90vh] bg-gray-50">
@@ -51,8 +79,8 @@ const GalleryImage = () => {
       >
         {isLoading ? (
           <GalleryLoading />
-        ) : filteredPhotos.length > 0 ? (
-          filteredPhotos.map((photo, index) => (
+        ) : allPhotos.length > 0 ? (
+          allPhotos.map((photo, index) => (
             <div
               key={index}
               onClick={() => handleImageClick(photo)}

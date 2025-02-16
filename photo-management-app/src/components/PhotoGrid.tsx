@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid, CardMedia, Box, Checkbox } from "@mui/material";
-import { type Photo } from "../hooks/useAlbums";
+import { type Photo } from "../types";
 interface PhotoGridProps {
   photos: Photo[];
   selectedPhotos: Set<number>;

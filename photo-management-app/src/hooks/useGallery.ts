@@ -1,22 +1,13 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useGalleryImages } from "./useGalleryImages";
-
-export interface Photo {
-  urls: {
-    small: string;
-    regular: string;
-    full: string;
-  };
-  created_at: string;
-  updated_at: string;
-  alt_description?: string;
-  displayUrl?: string;
-}
+import { SelectedPhoto } from "../types";
 
 export function useGallery() {
   const [open, setOpen] = useState(false);
-  const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
+  const [selectedPhoto, setSelectedPhoto] = useState<SelectedPhoto | null>(
+    null
+  );
   const [searchParams, setSearchParams] = useSearchParams();
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
@@ -101,7 +92,7 @@ export function useGallery() {
     setSearchParams(searchParams);
   };
 
-  const handleImageClick = (photo: Photo) => {
+  const handleImageClick = (photo: SelectedPhoto) => {
     setSelectedPhoto(photo);
     setOpen(true);
   };

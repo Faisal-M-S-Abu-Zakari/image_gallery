@@ -1,17 +1,5 @@
 import { ArrowUpDown, Grid2X2, List } from "lucide-react";
-
-interface GalleryFiltersProps {
-  handleType: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  handleSize: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  handleSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  setSortBy: (value: "created" | "updated") => void;
-  toggleSortOrder: () => void;
-  setViewMode: (mode: "grid" | "list") => void;
-  typeValue: string;
-  sortBy: "created" | "updated";
-  sortOrder: "asc" | "desc";
-  viewMode: "grid" | "list";
-}
+import { GalleryFiltersProps } from "../types";
 
 const GalleryFilters = ({
   handleType,

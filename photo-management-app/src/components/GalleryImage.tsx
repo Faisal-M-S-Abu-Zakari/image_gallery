@@ -3,13 +3,7 @@ import { useGallery } from "../hooks/useGallery";
 import ImageModal from "./ImageModal";
 import GalleryFilters from "./GalleryFilters";
 import GalleryLoading from "./GalleryLoading";
-
-type UploadedImage = {
-  url: string;
-  title: string;
-  description: string;
-  user: string;
-};
+import { UploadedImage } from "../types";
 
 const GalleryImage = () => {
   const {
@@ -35,7 +29,9 @@ const GalleryImage = () => {
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
 
   useEffect(() => {
-    const savedImages = JSON.parse(localStorage.getItem("uploadedImages") || "[]") as UploadedImage[];
+    const savedImages = JSON.parse(
+      localStorage.getItem("uploadedImages") || "[]"
+    ) as UploadedImage[];
     setUploadedImages(Array.isArray(savedImages) ? savedImages : []);
   }, []);
 

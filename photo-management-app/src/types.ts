@@ -66,3 +66,10 @@ export interface ImageGridProps {
     value: string
   ) => void;
 }
+
+export interface User {
+  name?: string;
+  email: string;
+  password: string;
+  check?: boolean;
+}

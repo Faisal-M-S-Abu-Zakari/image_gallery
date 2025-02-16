@@ -1,37 +1,25 @@
+// src/pages/RegisterPage.tsx
 import { MdEmail, MdLock, MdPerson } from "react-icons/md";
+import { Link, useNavigate } from "react-router-dom";
+
 import "../styles/global.css";
 import "../styles/login.css";
 import logo from "../../public/image.png";
-import { Link, useNavigate } from "react-router-dom";
-import { useRef } from "react";
-const RegisterPage = () => {
-  const name = useRef<HTMLInputElement>(null);
-  const email = useRef<HTMLInputElement>(null);
-  const password = useRef<HTMLInputElement>(null);
-  const check = useRef<HTMLInputElement>(null);
+import { useForm } from "../hooks/useForm ";
 
+const RegisterPage = () => {
+  const { name, email, password, check, getFormData } = useForm();
   const navigate = useNavigate();
-  const handelSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (
-      name.current?.value &&
-      email.current?.value &&
-      password.current?.value &&
-      check.current?.checked
-    ) {
-      const newUser = {
-        name: name.current.value,
-        email: email.current.value,
-        password: password.current.value,
-        check: check.current.checked,
-      };
+    const newUser = getFormData();
+    if (newUser) {
       const existingUsers = localStorage.getItem("users");
       const usersArray = existingUsers ? JSON.parse(existingUsers) : [];
       usersArray.push(newUser);
       localStorage.setItem("users", JSON.stringify(usersArray));
-      const loggedInUser = JSON.stringify(name.current.value);
-      localStorage.setItem("loggedInUser", loggedInUser);
-
+      localStorage.setItem("loggedInUser", JSON.stringify(newUser.name));
       navigate("/upload");
     } else {
       alert(
@@ -39,10 +27,10 @@ const RegisterPage = () => {
       );
     }
   };
+
   return (
     <div className="login-page">
       <div className="background"></div>
-
       <div className="login-container">
         <div className="flex justify-center items-center">
           <img src={logo} alt="logo" className="w-40" />
@@ -51,7 +39,7 @@ const RegisterPage = () => {
           <h2>Create Account</h2>
           <p>Join us to manage and share your photos seamlessly!</p>
         </div>
-        <form onSubmit={handelSubmit} className="register-form">
+        <form onSubmit={handleSubmit} className="register-form">
           <div className="input-group">
             <MdPerson
               style={{ fontSize: "18px", marginRight: "8px", color: "#666" }}
@@ -80,14 +68,14 @@ const RegisterPage = () => {
               required
             />
           </div>
-          <div className="flex check-register ">
+          <div className="flex check-register">
             <input type="checkbox" ref={check} />
             <label>I agree with Terms & Conditions</label>
           </div>
           <button className="register-btn">Sign Up</button>
         </form>
         <p className="signup">
-          already have an account? <Link to={"/login"}>Login</Link>
+          Already have an account? <Link to={"/login"}>Login</Link>
         </p>
       </div>
     </div>

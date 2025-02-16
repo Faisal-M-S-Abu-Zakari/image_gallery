@@ -16,7 +16,7 @@ import { Delete } from "@mui/icons-material";
 import { Box } from "@mui/joy";
 import Swal from "sweetalert2";
 import { useAlbums } from "../hooks/useAlbums";
-import { type Album } from "../types";
+import { type Album, type Photo } from "../types";
 import { AlbumCard } from "./AlbumCard";
 import { PhotoGrid } from "./PhotoGrid";
 
@@ -24,7 +24,6 @@ const Albums: React.FC = () => {
   const {
     albums,
     createAlbum,
-
     deleteAlbum,
     updateAlbum,
     deletePhotosFromAlbum,
@@ -68,6 +67,11 @@ const Albums: React.FC = () => {
       newSelection.add(photoId);
     }
     setSelectedPhotos(newSelection);
+  };
+  const handleReorderPhotos = (albumId: number, reorderedPhotos: Photo[]) => {
+    if (currentAlbum) {
+      updateAlbum({ ...currentAlbum, photos: reorderedPhotos });
+    }
   };
 
   return (
@@ -202,6 +206,9 @@ const Albums: React.FC = () => {
               photos={currentAlbum.photos}
               selectedPhotos={selectedPhotos}
               onPhotoSelect={handlePhotoSelect}
+              onReorder={(newPhotos) =>
+                handleReorderPhotos(currentAlbum.id, newPhotos)
+              }
             />
           ) : (
             <Typography variant="body1" textAlign="center" sx={{ p: 2 }}>

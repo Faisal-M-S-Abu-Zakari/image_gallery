@@ -40,7 +40,7 @@ const Navbar: React.FC = () => {
           to="image-preview"
           className="relative hover: transition after:content-[''] after:absolute after:left-0 after:bottom-[-2px] after:w-full after:h-[2px] after:bg-yellow-400 after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300"
         >
-          Image Preview
+          Albums
         </Link>
       </nav>
 

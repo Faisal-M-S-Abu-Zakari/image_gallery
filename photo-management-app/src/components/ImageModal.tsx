@@ -6,6 +6,7 @@ import Sheet from "@mui/joy/Sheet";
 import { Avatar, DialogTitle, List, ListItem, ListItemButton } from "@mui/joy";
 import Button from "@mui/joy/Button";
 import { Dialog, DialogContent } from "@mui/material";
+import Swal from 'sweetalert2'
 
 interface ImageModalProps {
   open: boolean;
@@ -52,6 +53,12 @@ const ImageModal: React.FC<ImageModalProps> = ({
     console.log(selectedPhoto.displayUrl);
     localStorage.setItem("albums", JSON.stringify(updatedAlbums));
     // Toast.success('image saved successfully!')
+    onClose();
+    Swal.fire({
+      title: "Image Added Successfully!",
+      text: "You clicked the button!",
+      icon: "success"
+    });
     SetOpenSaveDialog(false);
   };
 
@@ -110,21 +117,27 @@ const ImageModal: React.FC<ImageModalProps> = ({
           {/* Details Section */}
           <div className="w-full sm:w-1/2 flex flex-col !space-y-8 !mx-4">
             <div className="flex items-center gap-3">
+            {
+              selectedPhoto?.user&&
               <Avatar
                 src={selectedPhoto?.user.profile_image.medium}
                 alt={selectedPhoto?.user.name}
                 sx={{ width: 60, height: 60 }}
               />
-              <Typography level="body-lg" fontWeight="bold">
-                <a
-                  href={selectedPhoto?.user.links.html}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline"
-                >
-                  {selectedPhoto?.user.name}
-                </a>
-              </Typography>
+            }  
+            {
+               selectedPhoto?.user&&  <Typography level="body-lg" fontWeight="bold">
+               <a
+                 href={selectedPhoto?.user.links.html}
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 className="text-blue-600 hover:underline"
+               >
+                 {selectedPhoto?.user.name}
+               </a>
+             </Typography>
+            }
+             
             </div>
             <Typography level="body-lg" fontWeight="bold">
               {selectedPhoto?.alt_description || "No Title"}
@@ -143,31 +156,66 @@ const ImageModal: React.FC<ImageModalProps> = ({
               ADD TO ALBUM
             </Button>
           </div>
-          <Dialog
-            open={openSaveDialog}
-            onClose={() => SetOpenSaveDialog(false)}
+          <Dialog 
+  open={openSaveDialog} 
+  onClose={() => SetOpenSaveDialog(false)}
+  sx={{
+    "& .MuiDialog-paper": {
+      borderRadius: "12px", 
+      padding: "20px", 
+      maxWidth: "400px", 
+      backgroundColor: "#f9f9f9",
+    },
+  }}
+>
+  <DialogTitle 
+    sx={{ 
+      fontWeight: "bold", 
+      textAlign: "center", 
+      fontSize: "1.2rem",
+      color: "#333"
+    }}
+  >
+    Pick an Album
+  </DialogTitle>
+  <DialogContent>
+    <List>
+      {albums.length > 0 ? (
+        albums.map((album) => (
+          <ListItem 
+            key={album.id} 
+            sx={{ borderBottom: "1px solid #ddd" }}
           >
-            <DialogTitle>Pick an album to save to</DialogTitle>
-            <DialogContent>
-              <List>
-                {albums.length > 0 ? (
-                  albums.map((album) => (
-                    <ListItem key={album.id}>
-                      <ListItemButton
-                        onClick={() => handleSaveToAlbum(album.id)}
-                      >
-                        {album.name}
-                      </ListItemButton>
-                    </ListItem>
-                  ))
-                ) : (
-                  <Typography sx={{ p: 2 }}>
-                    No albums found. Create one first.
-                  </Typography>
-                )}
-              </List>
-            </DialogContent>
-          </Dialog>
+            <ListItemButton
+              onClick={() => handleSaveToAlbum(album.id)}
+              sx={{
+                borderRadius: "8px",
+                transition: "background 0.3s ease",
+                "&:hover": {
+                  backgroundColor: "#e0f7fa",
+                },
+              }}
+            >
+              {album.name}
+            </ListItemButton>
+          </ListItem>
+        ))
+      ) : (
+        <Typography 
+          sx={{ 
+            p: 2, 
+            textAlign: "center", 
+            fontSize: "0.9rem", 
+            color: "gray"
+          }}
+        >
+          No albums found. Create one first.
+        </Typography>
+      )}
+    </List>
+  </DialogContent>
+</Dialog>
+
         </div>
       </Sheet>
     </Modal>

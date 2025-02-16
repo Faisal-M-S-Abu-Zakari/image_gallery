@@ -1,35 +1,39 @@
+// src/pages/LoginPage.tsx
 import { FcGoogle } from "react-icons/fc";
 import { MdEmail, MdLock } from "react-icons/md";
-import "../styles/global.css";
-import "../styles/login.css";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../public/image.png";
-import { useRef } from "react";
+import "../styles/global.css";
+import "../styles/login.css";
+import { useForm } from "../hooks/useForm ";
+
 const LoginPage = () => {
-  const email = useRef<HTMLInputElement>(null);
-  const password = useRef<HTMLInputElement>(null);
+  const { email, password, getFormData } = useForm();
   const navigate = useNavigate();
+
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const existingUsers = localStorage.getItem("users");
-    const usersArray = existingUsers ? JSON.parse(existingUsers) : [];
-    const userExists = usersArray.find(
-      (user: { email: string; password: string }) =>
-        user.email === email.current?.value &&
-        user.password === password.current?.value
-    );
+    const userData = getFormData();
+    if (userData) {
+      const existingUsers = localStorage.getItem("users");
+      const usersArray = existingUsers ? JSON.parse(existingUsers) : [];
+      const userExists = usersArray.find(
+        (user: { email: string; password: string }) =>
+          user.email === userData.email && user.password === userData.password
+      );
 
-    if (userExists) {
-      localStorage.setItem("loggedInUser", JSON.stringify(userExists.name));
-      navigate("/upload");
-    } else {
-      alert("Invalid email or password. Please try again.");
+      if (userExists) {
+        localStorage.setItem("loggedInUser", JSON.stringify(userExists.name));
+        navigate("/upload");
+      } else {
+        alert("Invalid email or password. Please try again.");
+      }
     }
   };
+
   return (
     <div className="login-page">
       <div className="background"></div>
-
       <div className="login-container">
         <div className="flex justify-center items-center">
           <img src={logo} alt="logo" className="w-40" />
@@ -73,7 +77,7 @@ const LoginPage = () => {
             />
           </div>
 
-          <button className="register-btn ">Log in</button>
+          <button className="register-btn">Log in</button>
         </form>
 
         <p className="signup">

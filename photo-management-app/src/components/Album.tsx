@@ -16,27 +16,20 @@ import {
   TextField,
   Checkbox,
 } from "@mui/material";
-import { Edit, Delete, DriveFileMove } from "@mui/icons-material";
-// import DragDropContext from "react-beautiful-dnd";
-// import Droppable from "react-beautiful-dnd";
-// import Draggable from "react-beautiful-dnd";
+import { Edit, Delete } from "@mui/icons-material";
 import { Box } from "@mui/joy";
 import Swal from "sweetalert2";
-
-// Define TypeScript types
 interface Photo {
   id: number;
   url: string;
   displayUrl: string;
 }
-
 interface Album {
   id: number;
   name: string;
   photos: Photo[];
   cover: Photo | null;
 }
-//change
 const Albums: React.FC = () => {
   const [albums, setAlbums] = useState<Album[]>(() => {
     const savedAlbums = localStorage.getItem("albums");
@@ -46,12 +39,10 @@ const Albums: React.FC = () => {
   const [newAlbumName, setNewAlbumName] = useState<string>("");
   const [currentAlbum, setCurrentAlbum] = useState<Album | null>(null);
   const [openAlbumView, setOpenAlbumView] = useState<boolean>(false);
-  const [selectedPhotos, setSelectedPhotos] = useState<Set<number>>(new Set()); // To track selected photos
-
+  const [selectedPhotos, setSelectedPhotos] = useState<Set<number>>(new Set());
   useEffect(() => {
     localStorage.setItem("albums", JSON.stringify(albums));
   }, [albums]);
-
   const handleCreateAlbum = () => {
     if (newAlbumName.trim()) {
       const newAlbum: Album = {
@@ -62,37 +53,77 @@ const Albums: React.FC = () => {
       };
       setAlbums([...albums, newAlbum]);
       setNewAlbumName("");
-       Swal.fire({
-            title: "Album Added Successfully!",
-            text: "You clicked the button!",
-            icon: "success"
-          });
+      Swal.fire({
+        title: "Album Added Successfully!",
+        text: "You clicked the button!",
+        icon: "success",
+      });
       setOpenDialog(false);
     }
   };
-
   const handleDeleteAlbum = (albumId: number) => {
     setAlbums(albums.filter((album) => album.id !== albumId));
   };
-
   const handleSelectAllImages = () => {
     if (selectedPhotos.size === currentAlbum?.photos.length) {
-      setSelectedPhotos(new Set()); // Deselect all if all are selected
+      setSelectedPhotos(new Set());
     } else {
       const allPhotoIds = new Set(
         currentAlbum?.photos.map((photo) => photo.id)
       );
-      setSelectedPhotos(allPhotoIds); // Select all images
+      setSelectedPhotos(allPhotoIds);
     }
   };
-  const handleDeleteAllImages = (albumId: number | null) => {
-    setAlbums((prevAlbums) =>
-      prevAlbums.map((album) =>
-        album.id === albumId ? { ...album, photos: [] } : album
-      )
-    );
-  };
+  const handleDeleteSelectedImages = () => {
+    if (!currentAlbum || selectedPhotos.size === 0) return;
 
+    setAlbums((prevAlbums) =>
+      prevAlbums.map((album) => {
+        if (album.id === currentAlbum.id) {
+          const updatedPhotos = album.photos.filter(
+            (photo) => !selectedPhotos.has(photo.id)
+          );
+          const updatedCover =
+            updatedPhotos.length > 0 ? updatedPhotos[0] : null;
+          return {
+            ...album,
+            photos: updatedPhotos,
+            cover: updatedCover,
+          };
+        }
+        return album;
+      })
+    );
+
+    setSelectedPhotos(new Set());
+  };
+  const handleDeleteAllImages = (albumId: number | null) => {
+    if (!albumId) return;
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You want to delete all photos from this album?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete all!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setAlbums((prevAlbums) =>
+          prevAlbums.map((album) =>
+            album.id === albumId ? { ...album, photos: [], cover: null } : album
+          )
+        );
+        setSelectedPhotos(new Set());
+        Swal.fire(
+          "Deleted!",
+          "All photos have been deleted from the album.",
+          "success"
+        );
+      }
+    });
+  };
   return (
     <Container>
       <Button
@@ -110,7 +141,6 @@ const Albums: React.FC = () => {
       >
         Create New Album
       </Button>
-
       <Grid container spacing={4}>
         {albums.map((album) => (
           <Grid item key={album.id} xs={12} sm={6} md={4}>
@@ -119,20 +149,22 @@ const Albums: React.FC = () => {
                 setCurrentAlbum(album);
                 setOpenAlbumView(true);
               }}
-        
             >
               <CardMedia
                 component="img"
                 sx={{ objectFit: "cover", height: "300px" }}
                 image={
-                  album.cover && album.cover.displayUrl
-                    ? album.cover.displayUrl
+                  album.photos.length > 0
+                    ? album.photos[0].displayUrl || album.photos[0].url
                     : "https://via.placeholder.com/150"
                 }
                 alt={album.name}
               />
               <CardContent>
                 <Typography variant="h5">{album.name}</Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {album.photos.length} photos
+                </Typography>
               </CardContent>
               <CardActions>
                 <IconButton
@@ -154,18 +186,17 @@ const Albums: React.FC = () => {
                       showCancelButton: true,
                       confirmButtonColor: "#3085d6",
                       cancelButtonColor: "#d33",
-                      confirmButtonText: "Yes, delete it!"
+                      confirmButtonText: "Yes, delete it!",
                     }).then((result) => {
                       if (result.isConfirmed) {
                         handleDeleteAlbum(album.id);
                         Swal.fire({
                           title: "Deleted!",
-                          text: "Your file has been deleted.",
-                          icon: "success"
+                          text: "Your album has been deleted.",
+                          icon: "success",
                         });
                       }
                     });
-                
                   }}
                 >
                   <Delete />
@@ -175,7 +206,6 @@ const Albums: React.FC = () => {
           </Grid>
         ))}
       </Grid>
-
       {/* Dialog for Creating or Editing Albums */}
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <DialogTitle>
@@ -215,31 +245,49 @@ const Albums: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
-
       {/* Dialog for Viewing Album Images */}
-      <Dialog open={openAlbumView} onClose={() => setOpenAlbumView(false)}>
+      <Dialog
+        open={openAlbumView}
+        onClose={() => {
+          setOpenAlbumView(false);
+          setSelectedPhotos(new Set());
+        }}
+        maxWidth="md"
+        fullWidth
+      >
         <DialogTitle>
-          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            {currentAlbum?.name}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Typography variant="h6">{currentAlbum?.name}</Typography>
             <Box>
+              {selectedPhotos.size > 0 && (
+                <Button
+                  startIcon={<Delete />}
+                  color="error"
+                  onClick={handleDeleteSelectedImages}
+                  sx={{ mr: 1 }}
+                >
+                  Delete Selected ({selectedPhotos.size})
+                </Button>
+              )}
               <IconButton
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-              >
-                <DriveFileMove />
-              </IconButton>
-              <IconButton
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDeleteAllImages(currentAlbum ? currentAlbum.id : null);
-                }}
+                onClick={() => handleDeleteAllImages(currentAlbum?.id || null)}
+                disabled={!currentAlbum?.photos.length}
               >
                 <Delete />
               </IconButton>
               <Checkbox
-                checked={selectedPhotos.size === currentAlbum?.photos.length}
+                checked={
+                  selectedPhotos.size === currentAlbum?.photos.length &&
+                  currentAlbum?.photos.length > 0
+                }
                 onChange={handleSelectAllImages}
+                disabled={!currentAlbum?.photos.length}
               />
             </Box>
           </Box>
@@ -248,117 +296,99 @@ const Albums: React.FC = () => {
           {currentAlbum?.photos.length ? (
             <Grid container spacing={2}>
               {currentAlbum.photos.map((photo) => (
-                <Grid item key={photo.id} xs={4} sm={5} md={6}>
-                  <CardMedia
-                    component="img"
-                    height="100"
-                    image={
-                      photo.displayUrl ||
-                      photo.url ||
-                      "https://via.placeholder.com/150"
-                    }
-                    alt="Album Photo"
+                <Grid item key={photo.id} xs={12} sm={6} md={4}>
+                  <Box
                     sx={{
-                      objectFit: "cover",
-                      width: "100%",
-                      height: "auto",
-                      maxWidth: "300px",
+                      position: "relative",
+                      "&:hover": {
+                        "& .photo-overlay": {
+                          opacity: 1,
+                        },
+                      },
                     }}
-                    onClick={() => {
-                      const newSelection = new Set(selectedPhotos);
-                      if (newSelection.has(photo.id)) {
-                        newSelection.delete(photo.id); // Deselect if already selected
-                      } else {
-                        newSelection.add(photo.id); // Select the photo
+                  >
+                    <CardMedia
+                      component="img"
+                      image={
+                        photo.displayUrl ||
+                        photo.url ||
+                        "https://via.placeholder.com/150"
                       }
-                      setSelectedPhotos(newSelection);
-                    }}
-                    style={{
-                      border: selectedPhotos.has(photo.id)
-                        ? "2px solid blue"
-                        : "none", // Highlight selected photo
-                    }}
-                  />
+                      alt="Album Photo"
+                      sx={{
+                        width: "100%",
+                        height: 200,
+                        objectFit: "cover",
+                        borderRadius: 1,
+                        border: selectedPhotos.has(photo.id)
+                          ? "3px solid #1976d2"
+                          : "3px solid transparent",
+                      }}
+                      onClick={() => {
+                        const newSelection = new Set(selectedPhotos);
+                        if (newSelection.has(photo.id)) {
+                          newSelection.delete(photo.id);
+                        } else {
+                          newSelection.add(photo.id);
+                        }
+                        setSelectedPhotos(newSelection);
+                      }}
+                    />
+                    <Box
+                      className="photo-overlay"
+                      sx={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        bgcolor: "rgba(0,0,0,0.5)",
+                        opacity: 0,
+                        transition: "opacity 0.2s",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Checkbox
+                        checked={selectedPhotos.has(photo.id)}
+                        onChange={() => {
+                          const newSelection = new Set(selectedPhotos);
+                          if (newSelection.has(photo.id)) {
+                            newSelection.delete(photo.id);
+                          } else {
+                            newSelection.add(photo.id);
+                          }
+                          setSelectedPhotos(newSelection);
+                        }}
+                        sx={{
+                          color: "white",
+                          "&.Mui-checked": { color: "white" },
+                        }}
+                      />
+                    </Box>
+                  </Box>
                 </Grid>
               ))}
             </Grid>
           ) : (
-            // <DragDropContext
-            //   onDragEnd={(result: DropResult) => {
-            //     // Handle reordering of photos
-            //     const { source, destination } = result;
-            //     if (!destination) return;
-
-            //     const reorderedPhotos = Array.from(currentAlbum.photos);
-            //     const [movedPhoto] = reorderedPhotos.splice(source.index, 1);
-            //     reorderedPhotos.splice(destination.index, 0, movedPhoto);
-
-            //     // Update the album with reordered photos
-            //     setAlbums((prevAlbums) =>
-            //       prevAlbums.map((album) =>
-            //         album.id === currentAlbum.id
-            //           ? { ...album, photos: reorderedPhotos }
-            //           : album
-            //       )
-            //     );
-            //   }}
-            // >
-            //   <Droppable1 droppableId="photoList" direction="horizontal">
-            //     {(provided: DroppableProvided, snapshot) => (
-            //       <Grid
-            //         container
-            //         spacing={2}
-            //         {...provided.droppableProps}
-            //         ref={provided.innerRef}
-            //       >
-            //         {currentAlbum.photos.map((photo, index) => (
-            //           <Draggable1
-            //             key={photo.id}
-            //             draggableId={photo.id.toString()}
-            //             index={index}
-            //           >
-            //             {(provided: DraggableProvided) => (
-            //               <Grid
-            //                 item
-            //                 key={photo.id}
-            //                 xs={6}
-            //                 sm={4}
-            //                 md={3}
-            //                 ref={provided.innerRef}
-            //                 {...provided.draggableProps}
-            //                 {...provided.dragHandleProps}
-            //               >
-            //                 <CardMedia
-            //                   component="img"
-            //                   height="100"
-            //                   image={
-            //                     photo.displayUrl ||
-            //                     photo.url ||
-            //                     "https://via.placeholder.com/150"
-            //                   } // Fallback to placeholder if no URL or displayUrl
-            //                   alt="Album Photo"
-            //                   sx={{ objectFit: "cover", width: "100%" }}
-            //                 />
-            //               </Grid>
-            //             )}
-            //           </Draggable1>
-            //         ))}
-            //         {provided.placeholder}
-            //       </Grid>
-            //     )}
-            //   </Droppable1>
-            // </DragDropContext>
             <Typography variant="body1" textAlign="center" sx={{ p: 2 }}>
               There are no images in this album yet
             </Typography>
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenAlbumView(false)}>Close</Button>
+          <Button
+            onClick={() => {
+              setOpenAlbumView(false);
+              setSelectedPhotos(new Set());
+            }}
+          >
+            Close
+          </Button>
         </DialogActions>
       </Dialog>
     </Container>
   );
 };
-
 export default Albums;
